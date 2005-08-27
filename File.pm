@@ -35,8 +35,7 @@ sub import {
    Digest::MD5->import(keys %imp);
 }
 
-our $VERSION = '0.01';
-sub VERSION { $VERSION }
+our $VERSION = '0.02';
 
 my $getfh = sub {
    my $file = shift;

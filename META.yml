@@ -1,11 +1,11 @@
 #XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
 name:         Digest-MD5-File
-version:      0.01
+version:      0.02
 version_from: File.pm
 installdirs:  site
 requires:
-    LWP::UserAgent:                0
     Encode:                        0
+    LWP::UserAgent:                0
     Digest::MD5:                   0
 
 distribution_type: module

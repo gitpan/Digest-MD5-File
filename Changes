@@ -1,6 +1,8 @@
 Revision history for Perl extension Digest::MD5::File.
 
+0.02  Fri Aug 26 18:35:00 2005 
+        - fixed issue with VERSION() that conflicted with UNIVERSAL's VERSION functionality
+
 0.01  Thu Mar 31 09:05:59 2005
 	- original version; created by h2xs 1.22 with options
 		-AXc -n Digest::MD5::File
-
