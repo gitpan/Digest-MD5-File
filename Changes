@@ -1,5 +1,8 @@
 Revision history for Perl extension Digest::MD5::File.
 
+0.03  Tue Aug 30 20:06:12 2005
+	- fixed import() to resolve bug importing names into packages other than main:: (Thanks Mike MacKenzie for pointing that out)
+
 0.02  Fri Aug 26 18:35:00 2005 
         - fixed issue with VERSION() that conflicted with UNIVERSAL's VERSION functionality
 

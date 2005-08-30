@@ -31,11 +31,11 @@ sub import {
       push @EXPORT_OK, $_ unless $_ =~ m/^(no)?(bin|utf8|fatals)$/;
       delete $imp{"-$_"} if exists $imp{"-$_"};
    }
-   $me->export_to_level(2, $me, grep(!/^-/, @_));
+   $me->export_to_level(1, $me, grep(!/^-/, @_));
    Digest::MD5->import(keys %imp);
 }
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 my $getfh = sub {
    my $file = shift;
