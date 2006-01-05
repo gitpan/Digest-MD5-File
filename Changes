@@ -1,5 +1,8 @@
 Revision history for Perl extension Digest::MD5::File.
 
+0.04  Tue Jan  3 21:23:44 2006
+	- added dir_* funtions and adddir() method
+
 0.03  Tue Aug 30 20:06:12 2005
 	- fixed import() to resolve bug importing names into packages other than main:: (Thanks Mike MacKenzie for pointing that out)
 
