@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Carp;
 use Digest::MD5;
-use Encode;
+eval { require Encode; };
 use LWP::UserAgent;
 
 require Exporter;
@@ -41,7 +41,7 @@ sub import {
     Digest::MD5->import(keys %imp);
 }
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 my $getfh = sub {
     my $file = shift;
@@ -367,7 +367,7 @@ or at the function/method level by specifying its value as the third argument fo
 
     url_md5_hex($url,1);
 
-It use's L<Encode>'s encode_utf8() function to do the encoding.
+It use's L<Encode>'s encode_utf8() function to do the encoding. So if you do not have Encode (pre 5.7.3) this won't work :)
 
 =head2 NOFATALS
 

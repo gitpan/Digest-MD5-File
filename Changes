@@ -1,5 +1,8 @@
 Revision history for Perl extension Digest::MD5::File.
 
+0.05  Wed Jun  7 18:35:42 2006
+	- made it still load under perl's without Encode (older than 5.7.3) (of course Encoding doesn't work...)
+
 0.04  Tue Jan  3 21:23:44 2006
 	- added dir_* funtions and adddir() method
 
