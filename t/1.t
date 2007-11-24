@@ -1,15 +1,20 @@
-# Before `make install' is performed this script should be runnable with
-# `make test'. After `make install' it should work as `perl 1.t'
-
-#########################
-
-# change 'tests => 1' to 'tests => last_test_to_print';
-
-use Test::More tests => 1;
+use Test::More tests => 3;
 BEGIN { use_ok('Digest::MD5::File') };
 
-#########################
 
-# Insert your test code below, the Test::More module is use()ed here so read
-# its man page ( perldoc Test::More ) for help writing this test script.
+chdir 't';
+ok( Digest::MD5::File::file_md5_hex('hello-world') eq '2cad20c19a8eb9bb11a9f76527aec9bc', 'simple calc' );
 
+my $hr = Digest::MD5::File::dir_md5_hex('teststruct');
+
+is_deeply(
+	$hr, 
+	{
+		'a' => 'b1946ac92492d2347c6235b4d2611184',
+		'b' => '32d6c11747e03715521007d8c84b5aff',
+		'subdir' => '',
+		File::Spec->catfile( qw(subdir c) ) => 'df0590f214a2eaf9a638f43838132f67',
+    }, 
+    'directory struct',
+);
+chdir '..';

@@ -1,5 +1,10 @@
 Revision history for Perl extension Digest::MD5::File.
 
+0.06  Sat Nov 24 12:15:26 2007
+    - rt 30618
+    - rt 29653
+    - two more tests
+
 0.05  Wed Jun  7 18:35:42 2006
 	- made it still load under perl's without Encode (older than 5.7.3) (of course Encoding doesn't work...)
 

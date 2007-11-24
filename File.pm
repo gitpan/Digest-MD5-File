@@ -41,7 +41,7 @@ sub import {
     Digest::MD5->import(keys %imp);
 }
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 my $getfh = sub {
     my $file = shift;
@@ -55,15 +55,6 @@ my $getfh = sub {
         return $fh;
     } 
     else { return undef; }
-};
-
-my $utf8fh = sub {
-    my @utf8;
-    my $fh = shift;
-    for(<$fh>) { 
-       push @utf8, Encode::encode_utf8($_); 
-    }
-    return @utf8;
 };
 
 my $getur = sub {
@@ -103,9 +94,9 @@ sub _dir {
         my $_dirver = File::Spec->catdir($dir, $file);
         my $full    = -d $_dirver ? $_dirver 
                                   : File::Spec->catfile($dir, $file);
-        my $short   = $full;
-        $short      =~ s{^$base[/]?}{}; # use File::Spec instead
 
+        my $short = File::Spec->abs2rel( $full, $base );
+		
         if(-l $full) {
             my $target = readlink $full;
             $full      = $target if -d $target;
@@ -153,8 +144,11 @@ sub file_md5 {
     my ($bn,$ut)   = @_;
     local $BINMODE = $bn if defined $bn;
     local $UTF8    = $ut if defined $ut;
-    return Digest::MD5::md5(<$fh>) if !$UTF8;
-    return Digest::MD5::md5($utf8fh->($fh)); 
+    my $md5 = Digest::MD5->new();
+    while(<$fh>) {
+	    $md5->add( $UTF8 ? Encode::encode_utf8($_) : $_ );
+    }
+    return $md5->digest;
 }
 
 sub file_md5_hex {
@@ -162,8 +156,11 @@ sub file_md5_hex {
     my ($bn,$ut)   = @_;
     local $BINMODE = $bn if defined $bn;
     local $UTF8    = $ut if defined $ut;
-    return Digest::MD5::md5_hex(<$fh>) if !$UTF8;
-    return Digest::MD5::md5_hex($utf8fh->($fh));
+    my $md5 = Digest::MD5->new();
+    while(<$fh>) {
+	    $md5->add( $UTF8 ? Encode::encode_utf8($_) : $_ );
+    }
+    return $md5->hexdigest;
 } 
 
 sub file_md5_base64 {
@@ -171,8 +168,12 @@ sub file_md5_base64 {
     my ($bn,$ut)   = @_;
     local $BINMODE = $bn if defined $bn;
     local $UTF8    = $ut if defined $ut;
-    return Digest::MD5::md5_base64(<$fh>) if !$UTF8;
-    return Digest::MD5::md5_base64($utf8fh->($fh));
+
+    my $md5 = Digest::MD5->new();
+    while(<$fh>) {
+	    $md5->add( $UTF8 ? Encode::encode_utf8($_) : $_ );
+    }
+    return $md5->b64digest;
 }
 
 sub url_md5 {
