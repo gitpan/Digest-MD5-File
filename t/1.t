@@ -1,9 +1,15 @@
-use Test::More tests => 3;
+use Test::More tests => 5;
 BEGIN { use_ok('Digest::MD5::File') };
 
 
 chdir 't';
-ok( Digest::MD5::File::file_md5_hex('hello-world') eq '2cad20c19a8eb9bb11a9f76527aec9bc', 'simple calc' );
+
+for(1..2) {
+   ok($_ == 1, 'pre do not clobber $_');
+   ok( Digest::MD5::File::file_md5_hex('hello-world') eq '2cad20c19a8eb9bb11a9f76527aec9bc', 'simple calc' );
+   ok($_ == 1, 'pst do not clobber $_');
+   last;
+}
 
 my $hr = Digest::MD5::File::dir_md5_hex('teststruct');
 

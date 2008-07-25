@@ -41,7 +41,7 @@ sub import {
     Digest::MD5->import(keys %imp);
 }
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 my $getfh = sub {
     my $file = shift;
@@ -65,9 +65,9 @@ my $getur = sub {
 sub Digest::MD5::adddir {
     my $md5  = shift;
     my $base = shift;
-    for( keys %{ _dir($base, undef, undef, 3) }) {
-        next if !$_;
-        my $file = File::Spec->catfile($base, $_);
+    for my $key ( keys %{ _dir($base, undef, undef, 3) }) {
+        next if !$key;
+        my $file = File::Spec->catfile($base, $key);
         $md5->addpath($file) or carp "addpath $file failed: $!" if !-d $file;
     }
     return 1;
@@ -87,7 +87,7 @@ sub _dir {
     $_md5func    = \&file_md5_base64 if $type eq '2';   
 
     opendir(DIR, $dir) or return;
-    my @dircont = grep( $_ ne '.' && $_ ne '..', readdir(DIR));
+    my @dircont = grep { $_ ne '.' && $_ ne '..' } readdir(DIR);
     closedir DIR;
 
     for my $file( @dircont ) {
@@ -140,38 +140,43 @@ sub dir_md5_base64 {
 }
 
 sub file_md5 {
-    my $fh         = $getfh->(shift()) or return; 
-    my ($bn,$ut)   = @_;
+    my ($file,$bn,$ut)   = @_;
     local $BINMODE = $bn if defined $bn;
     local $UTF8    = $ut if defined $ut;
+    my $fh         = $getfh->($file) or return;
+    
     my $md5 = Digest::MD5->new();
-    while(<$fh>) {
-	    $md5->add( $UTF8 ? Encode::encode_utf8($_) : $_ );
+    my $buf;
+    while(my $l = read($fh, $buf, 1024)) {
+	    $md5->add( $UTF8 ? Encode::encode_utf8($buf) : $buf );
     }
     return $md5->digest;
 }
 
 sub file_md5_hex {
-    my $fh         = $getfh->(shift()) or return;
-    my ($bn,$ut)   = @_;
+    my ($file,$bn,$ut)   = @_;
     local $BINMODE = $bn if defined $bn;
     local $UTF8    = $ut if defined $ut;
+    my $fh         = $getfh->($file) or return;
+    
     my $md5 = Digest::MD5->new();
-    while(<$fh>) {
-	    $md5->add( $UTF8 ? Encode::encode_utf8($_) : $_ );
+    my $buf;
+    while(my $l = read($fh, $buf, 1024)) {
+	    $md5->add( $UTF8 ? Encode::encode_utf8($buf) : $buf );
     }
     return $md5->hexdigest;
 } 
 
 sub file_md5_base64 {
-    my $fh         = $getfh->(shift()) or return;
-    my ($bn,$ut)   = @_;
+    my ($file,$bn,$ut)   = @_;
     local $BINMODE = $bn if defined $bn;
     local $UTF8    = $ut if defined $ut;
+    my $fh         = $getfh->($file) or return;
 
     my $md5 = Digest::MD5->new();
-    while(<$fh>) {
-	    $md5->add( $UTF8 ? Encode::encode_utf8($_) : $_ );
+    my $buf;
+    while(my $l = read($fh, $buf, 1024)) {
+	    $md5->add( $UTF8 ? Encode::encode_utf8($buf) : $buf );
     }
     return $md5->b64digest;
 }
@@ -206,14 +211,15 @@ sub Digest::MD5::addpath {
     local $BINMODE   = $bn if defined $bn;
     local $UTF8      = $ut if defined $ut;
     if(ref $fl eq 'ARRAY') {
-        for(@{ $fl }) {
-            $md5->addpath($_, $bn, $ut) or return;
+        for my $pth (@{ $fl }) {
+            $md5->addpath($pth, $bn, $ut) or return;
         }
     } 
     else {
         my $fh = $getfh->($fl) or return;
-        while(<$fh>) {
-           !$UTF8 ? $md5->add($_) : $md5->add(Encode::encode_utf8($_));
+        my $buf;
+        while(my $l = read($fh, $buf, 1024)) {
+           !$UTF8 ? $md5->add($buf) : $md5->add(Encode::encode_utf8($buf));
         }
     }
     return 1;
