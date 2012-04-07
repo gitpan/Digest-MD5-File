@@ -41,7 +41,7 @@ sub import {
     Digest::MD5->import(keys %imp);
 }
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 my $getfh = sub {
     my $file = shift;
@@ -50,7 +50,7 @@ my $getfh = sub {
     croak "$file: Is a directory" if -d $file && !$NOFATALS;
 
     if(-e $file && !-d $file) {
-        open my ($fh), $file or return;
+        open my $fh, $file or return;
         binmode $fh if $BINMODE;
         return $fh;
     } 
@@ -65,7 +65,7 @@ my $getur = sub {
 sub Digest::MD5::adddir {
     my $md5  = shift;
     my $base = shift;
-    for my $key ( keys %{ _dir($base, undef, undef, 3) }) {
+    for my $key ( sort keys %{ _dir($base, undef, undef, 3) }) {
         next if !$key;
         my $file = File::Spec->catfile($base, $key);
         $md5->addpath($file) or carp "addpath $file failed: $!" if !-d $file;
@@ -87,7 +87,7 @@ sub _dir {
     $_md5func    = \&file_md5_base64 if $type eq '2';   
 
     opendir(DIR, $dir) or return;
-    my @dircont = grep { $_ ne '.' && $_ ne '..' } readdir(DIR);
+    my @dircont = sort grep { $_ ne '.' && $_ ne '..' } readdir(DIR);
     closedir DIR;
 
     for my $file( @dircont ) {
@@ -245,7 +245,7 @@ Digest::MD5::File - Perl extension for getting MD5 sums for files and urls.
 
     use Digest::MD5::File qw(dir_md5_hex file_md5_hex url_md5_hex);
 
-    my $md5 = Digest::Md5->new;
+    my $md5 = Digest::MD5->new;
     $md5->addpath('/path/to/file');
     my $digest = $md5->hexdigest;
 
@@ -253,7 +253,7 @@ Digest::MD5::File - Perl extension for getting MD5 sums for files and urls.
     my $digest = file_md5_hex($file);
     my $digest = file_md5_base64($file);
 
-    my $md5 = Digest::Md5->new;
+    my $md5 = Digest::MD5->new;
     $md5->addurl('http://www.tmbg.com/tour.html');
     my $digest = $md5->hexdigest;
 
@@ -261,7 +261,7 @@ Digest::MD5::File - Perl extension for getting MD5 sums for files and urls.
     my $digest = url_md5_hex($url);
     my $digest = url_md5_base64($url);
   
-    my $md5 = Digest::Md5->new;
+    my $md5 = Digest::MD5->new;
     $md5->adddir('/directory');
     my $digest = $md5->hexdigest;
 
@@ -286,7 +286,7 @@ You can export any file_* dir_*, or url_* function and anything L<Digest::MD5> c
 
 =head2 addpath()
 
-    my $md5 = Digest::Md5->new;
+    my $md5 = Digest::MD5->new;
     $md5->addpath('/path/to/file.txt') 
         or die "file.txt is not where you said: $!";
 
@@ -298,13 +298,13 @@ or you can add multiple files by specifying an array ref of files:
  
 addpath()s each file in a directory recursively. Follows the same rules as the dir_* functions.
 
-    my $md5 = Digest::Md5->new;
+    my $md5 = Digest::MD5->new;
     $md5->adddir('/home/tmbg/') 
         or die "See warning above to see why I bailed: $!";
 
 =head2 addurl()
 
-    my $md5 = Digest::Md5->new;
+    my $md5 = Digest::MD5->new;
     $md5->addurl('http://www.tmbg.com/tour.html')
         or die "They Must Be not on tour";
 

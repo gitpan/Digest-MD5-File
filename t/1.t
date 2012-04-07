@@ -1,4 +1,4 @@
-use Test::More tests => 5;
+use Test::More tests => 6;
 BEGIN { use_ok('Digest::MD5::File') };
 
 
@@ -10,6 +10,16 @@ for(1..2) {
    ok($_ == 1, 'pst do not clobber $_');
    last;
 }
+
+my $d = Digest::MD5::File->new;
+$d->adddir('teststruct');
+my $dirdigest_a = $d->hexdigest;
+
+my $c = Digest::MD5::File->new;
+$c->adddir('teststruct');
+my $dirdigest_b = $c->hexdigest;
+
+is($dirdigest_a, $dirdigest_b, 'dir digest is the same');
 
 my $hr = Digest::MD5::File::dir_md5_hex('teststruct');
 
